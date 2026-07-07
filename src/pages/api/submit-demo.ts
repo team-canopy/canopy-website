@@ -1,235 +1,131 @@
 import type { APIRoute } from 'astro';
-import postgres from 'postgres';
+import { DemoSubmissionSchema } from '../../lib/schema';
 
-// Database connection singleton
-let sqlClient: ReturnType<typeof postgres> | null = null;
+// This endpoint must run on-demand as a Vercel serverless function. Without
+// this, `output: 'static'` would try to prerender it and the POST would 404
+// in production.
+export const prerender = false;
 
-function getSqlClient() {
-  if (!sqlClient) {
-    const connectionString = import.meta.env.POSTGRES_URL;
-    if (!connectionString) {
-      throw new Error('POSTGRES_URL environment variable is not configured');
-    }
-    
-    sqlClient = postgres(connectionString, {
-      max: 10, // Connection pool size
-      idle_timeout: 20,
-      connect_timeout: 10,
-      ssl: {
-        rejectUnauthorized: false // Required for Tailscale certificates
-      }
+/**
+ * Demo-form submission.
+ *
+ * The lead database lives in the homelab Kubernetes cluster and is NOT
+ * reachable from Vercel directly (Tailscale Funnel can't tunnel raw Postgres,
+ * and Vercel functions aren't tailnet members). So this function validates the
+ * submission and forwards it to the in-cluster ingest shim over HTTPS
+ * (Tailscale Funnel :443, authenticated with a shared secret). The shim writes
+ * to Postgres.
+ *
+ * If the shim is unreachable or unconfigured, we fall back to an email
+ * notification via Resend so a lead is never silently lost.
+ */
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  let data;
+  try {
+    data = await request.json();
+  } catch {
+    return json(400, { error: 'Invalid JSON in request body' });
+  }
+
+  const parsed = DemoSubmissionSchema.safeParse(data);
+  if (!parsed.success) {
+    return json(400, {
+      error: 'Validation failed',
+      errors: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
     });
   }
-  return sqlClient;
-}
+  const submission = parsed.data;
 
-// Input validation helper
-function validateInput(data: Record<string, unknown>): { valid: boolean; error?: string } {
-  // Required fields
-  if (!data.companyName || typeof data.companyName !== 'string' || data.companyName.trim().length < 2) {
-    return { valid: false, error: 'Company name is required (min 2 characters)' };
-  }
-  
-  if (!data.contactName || typeof data.contactName !== 'string' || data.contactName.trim().length < 2) {
-    return { valid: false, error: 'Contact name is required (min 2 characters)' };
-  }
-  
-  if (!data.email || typeof data.email !== 'string') {
-    return { valid: false, error: 'Email is required' };
-  }
-  
-  // Email format validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(data.email)) {
-    return { valid: false, error: 'Invalid email format' };
-  }
-  
-  // Optional field validations
-  if (data.phone && typeof data.phone === 'string' && data.phone.length > 50) {
-    return { valid: false, error: 'Phone number too long' };
-  }
-  
-  if (data.companySize && typeof data.companySize === 'string' && data.companySize.length > 50) {
-    return { valid: false, error: 'Company size value too long' };
-  }
-  
-  if (data.message && typeof data.message === 'string' && data.message.length > 5000) {
-    return { valid: false, error: 'Message too long (max 5000 characters)' };
-  }
-  
-  return { valid: true };
-}
+  const ingestUrl = import.meta.env.INGEST_URL;
+  const ingestSecret = import.meta.env.INGEST_SECRET;
 
-// Sanitize input to prevent injection
-function sanitizeInput(str: string | undefined | null): string | null {
-  if (!str || typeof str !== 'string') return null;
-  return str.trim().slice(0, 5000); // Limit length
-}
+  // Preserve real client metadata for the shim's audit trail (server-to-server
+  // hop would otherwise mask the browser's IP / UA / referrer).
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    clientAddress ||
+    'unknown';
 
-export const POST: APIRoute = async ({ request }) => {
-  let sql: ReturnType<typeof postgres> | null = null;
-  
-  try {
-    // Parse request body
-    let data: Record<string, unknown>;
+  if (ingestUrl && ingestSecret) {
     try {
-      data = await request.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON in request body' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-    
-    // Validate input
-    const validation = validateInput(data);
-    if (!validation.valid) {
-      return new Response(
-        JSON.stringify({ error: validation.error }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+      const res = await fetch(ingestUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ingestSecret}`,
+          'x-forwarded-for': ip,
+          'x-original-user-agent': request.headers.get('user-agent') || '',
+          'x-original-referer': request.headers.get('referer') || '',
+        },
+        body: JSON.stringify(submission),
+        // Don't let a slow homelab hang the request forever.
+        signal: AbortSignal.timeout(8000),
+      });
 
-    // Get client info for audit trail
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-               request.headers.get('x-real-ip') || 
-               'unknown';
-    const userAgent = sanitizeInput(request.headers.get('user-agent'));
-    const referrer = sanitizeInput(request.headers.get('referer'));
-
-    // Sanitize form data
-    const companyName = sanitizeInput(data.companyName as string)!;
-    const contactName = sanitizeInput(data.contactName as string)!;
-    const email = sanitizeInput(data.email as string)!;
-    const phone = sanitizeInput(data.phone as string);
-    const companySize = sanitizeInput(data.companySize as string);
-    const message = sanitizeInput(data.message as string);
-
-    // Check if database is configured
-    if (!import.meta.env.POSTGRES_URL) {
-      console.warn('POSTGRES_URL not configured, falling back to email-only mode');
-      
-      // Fallback: Send email notification
-      if (import.meta.env.RESEND_API_KEY) {
-        const { Resend } = await import('resend');
-        const resend = new Resend(import.meta.env.RESEND_API_KEY);
-        
-        await resend.emails.send({
-          from: 'Canopy Website <hello@canopy.ag>',
-          to: ['hello@canopy.ag'],
-          subject: `Demo Request: ${companyName}`,
-          html: `
-            <h2>New Demo Request (DB Not Connected)</h2>
-            <p><strong>Company:</strong> ${companyName}</p>
-            <p><strong>Contact:</strong> ${contactName}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-            <p><strong>Company Size:</strong> ${companySize || 'N/A'}</p>
-            <p><strong>Message:</strong> ${message || 'N/A'}</p>
-            <p><em>Note: Database connection not configured. Store this manually.</em></p>
-          `,
+      if (res.ok) {
+        const body = await res.json().catch(() => ({}));
+        return json(200, {
+          success: true,
+          id: body.id,
+          message: 'Thank you! We will be in touch within 24 hours.',
         });
       }
-      
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: 'Thank you! We will be in touch within 24 hours.'
-        }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
+      console.error(`Ingest returned ${res.status}: ${await res.text().catch(() => '')}`);
+    } catch (err) {
+      console.error('Ingest request failed:', err instanceof Error ? err.message : err);
     }
-
-    // Connect to database and insert submission
-    try {
-      sql = getSqlClient();
-      
-      const result = await sql`
-        INSERT INTO demo_submissions 
-          (company_name, contact_name, email, phone, company_size, message, ip_address, user_agent, referrer)
-        VALUES 
-          (${companyName}, ${contactName}, ${email}, ${phone}, ${companySize}, ${message}, ${ip}, ${userAgent}, ${referrer})
-        RETURNING id, submitted_at
-      `;
-
-      console.log(`Demo submission stored: ${result[0]?.id}`);
-
-      // Also send email notification (non-blocking)
-      if (import.meta.env.RESEND_API_KEY) {
-        const { Resend } = await import('resend');
-        const resend = new Resend(import.meta.env.RESEND_API_KEY);
-        
-        resend.emails.send({
-          from: 'Canopy Website <hello@canopy.ag>',
-          to: ['hello@canopy.ag'],
-          subject: `Demo Request: ${companyName}`,
-          html: `
-            <h2>New Demo Request</h2>
-            <p><strong>ID:</strong> ${result[0]?.id}</p>
-            <p><strong>Company:</strong> ${companyName}</p>
-            <p><strong>Contact:</strong> ${contactName}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-            <p><strong>Company Size:</strong> ${companySize || 'N/A'}</p>
-            <p><strong>Message:</strong> ${message || 'N/A'}</p>
-          `,
-        }).catch((err: Error) => console.error('Email notification failed:', err));
-      }
-
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          id: result[0]?.id,
-          message: 'Thank you! We will be in touch within 24 hours.'
-        }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
-      
-    } catch (dbError) {
-      console.error('Database error:', dbError);
-      
-      // Database connection failed - fallback to email
-      if (import.meta.env.RESEND_API_KEY) {
-        const { Resend } = await import('resend');
-        const resend = new Resend(import.meta.env.RESEND_API_KEY);
-        
-        await resend.emails.send({
-          from: 'Canopy Website <hello@canopy.ag>',
-          to: ['hello@canopy.ag'],
-          subject: `Demo Request (DB Failed): ${companyName}`,
-          html: `
-            <h2>New Demo Request (Database Error)</h2>
-            <p><strong>Company:</strong> ${companyName}</p>
-            <p><strong>Contact:</strong> ${contactName}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-            <p><strong>Company Size:</strong> ${companySize || 'N/A'}</p>
-            <p><strong>Message:</strong> ${message || 'N/A'}</p>
-            <p><em>Error: ${dbError instanceof Error ? dbError.message : 'Unknown database error'}</em></p>
-          `,
-        });
-      }
-      
-      // Return success to user (we have the data via email) but log the issue
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: 'Thank you! We will be in touch within 24 hours.'
-        }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-  } catch (error) {
-    console.error('Form submission error:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: 'Something went wrong. Please try again or email us directly at hello@canopy.ag'
-      }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-  } finally {
-    // Note: We don't close the connection here to allow connection pooling
-    // The connection will be reused for subsequent requests
+    // fall through to email fallback below
+  } else {
+    console.warn('INGEST_URL/INGEST_SECRET not configured; using email fallback');
   }
+
+  // Fallback: email the lead so it is never lost. Still report success to the
+  // user (we have their submission via email).
+  await sendFallbackEmail(submission);
+  return json(200, {
+    success: true,
+    message: 'Thank you! We will be in touch within 24 hours.',
+  });
 };
+
+async function sendFallbackEmail(s: {
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone?: string;
+  companySize?: string;
+  message?: string;
+}) {
+  const apiKey = import.meta.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error('No RESEND_API_KEY; lead could not be stored OR emailed:', s.email);
+    return;
+  }
+  try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from: 'Canopy Website <hello@canopy.ag>',
+      to: ['hello@canopy.ag'],
+      subject: `Demo Request (email fallback): ${s.companyName}`,
+      html: `
+        <h2>New Demo Request (stored via email fallback — DB ingest unavailable)</h2>
+        <p><strong>Company:</strong> ${s.companyName}</p>
+        <p><strong>Contact:</strong> ${s.contactName}</p>
+        <p><strong>Email:</strong> ${s.email}</p>
+        <p><strong>Phone:</strong> ${s.phone || 'N/A'}</p>
+        <p><strong>Company Size:</strong> ${s.companySize || 'N/A'}</p>
+        <p><strong>Message:</strong> ${s.message || 'N/A'}</p>
+      `,
+    });
+  } catch (err) {
+    console.error('Fallback email failed:', err instanceof Error ? err.message : err);
+  }
+}
+
+function json(status: number, body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+  });
+}
