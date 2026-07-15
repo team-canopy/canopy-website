@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: canopy-arc-runners-dind
     permissions:
       contents: read
       packages: write
