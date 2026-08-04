@@ -29,3 +29,9 @@ admin/
 # `git worktree remove` runs or manual `mkdir .worktrees/...`.
 .worktrees/
 .claude/worktrees
+
+# eflow session-hook runtime state — per-session bookkeeping, never committed
+.eflow/
+
+# local env overrides (Astro/Vite convention) — never committed
+.env.local
