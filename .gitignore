@@ -14,6 +14,7 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.local
 
 # macOS-specific files
 .DS_Store
@@ -29,3 +30,6 @@ admin/
 # `git worktree remove` runs or manual `mkdir .worktrees/...`.
 .worktrees/
 .claude/worktrees
+
+# eflow session-hook runtime state — per-session bookkeeping, never committed
+.eflow/
