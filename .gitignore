@@ -14,9 +14,13 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.local
 
 # macOS-specific files
 .DS_Store
+
+# eflow session-hook logs (not workspace state, safe to ignore)
+.eflow/
 
 # tina
 .tina/__generated__
