@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canopy hero — preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Standalone mirror of src/components/Hero.astro + the site's nav/buttons, so the
+     hero can be judged without running the Astro dev server. Video streams from the
+     Higgsfield CDN here; the component uses /hero/*.mp4 once downloaded. */
+  :root { --dark:#0B1120; --dark2:#070F1A; --green:#22C55E; --green2:#4ADE80; --blue:#00D4FF; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Inter,system-ui,sans-serif; color:#fff; background:linear-gradient(180deg,var(--dark) 0%,var(--dark2) 100%); min-height:100vh; -webkit-font-smoothing:antialiased; }
+  nav { position:fixed; inset:0 0 auto 0; z-index:50; height:4rem; background:rgba(17,29,47,.6); backdrop-filter:blur(12px); border-bottom:1px solid rgba(0,212,255,.1); }
+  nav .in { max-width:80rem; margin:0 auto; padding:0 2rem; height:100%; display:flex; align-items:center; justify-content:space-between; }
+  nav .brand { display:flex; align-items:center; gap:.75rem; font-weight:700; letter-spacing:.05em; }
+  nav .brand span { background:linear-gradient(135deg,var(--green),var(--green2)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+  nav .links { display:flex; gap:2rem; color:rgba(255,255,255,.7); font-size:.95rem; }
+  .btn-primary { background:linear-gradient(135deg,var(--green) 0%,var(--green2) 100%); color:var(--dark); font-weight:600; padding:1rem 2.5rem; border-radius:8px; border:0; cursor:pointer; font-size:1.125rem; font-family:inherit; }
+  .btn-secondary { background:transparent; color:var(--blue); font-weight:600; padding:.5rem 1rem; border-radius:8px; border:1px solid rgba(0,212,255,.4); font-size:.875rem; }
+  main { padding-top:4rem; }
+
+  .hero { position:relative; min-height:calc(100vh - 4rem); display:flex; align-items:center; overflow:hidden; background:var(--dark); isolation:isolate; }
+  .hero__media { position:absolute; inset:0; z-index:0; }
+  .hero__video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:68% 50%; }
+  .hero__scrim { position:absolute; inset:0; pointer-events:none; }
+  .hero__scrim--left { background:linear-gradient(90deg, var(--dark) 0%, rgba(11,17,32,.92) 28%, rgba(11,17,32,.45) 52%, transparent 72%); }
+  .hero__scrim--top { background:linear-gradient(180deg, rgba(11,17,32,.7), transparent 22%); }
+  .hero__scrim--bottom { background:linear-gradient(0deg, var(--dark), transparent 26%); }
+  .hero__inner { position:relative; z-index:1; width:100%; max-width:80rem; margin:0 auto; padding:clamp(4rem,12vh,8rem) 2rem; }
+  .hero__copy { max-width:40rem; }
+  .hero__eyebrow { margin:0 0 1.25rem; font-size:.75rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--blue); }
+  .hero__title { margin:0 0 1.5rem; font-size:clamp(2.25rem,5.2vw,4.25rem); line-height:1.05; letter-spacing:-.02em; font-weight:700; text-wrap:balance; }
+  .hero__sub { margin:0 0 2.25rem; font-size:clamp(1.0625rem,1.4vw,1.25rem); line-height:1.55; color:rgba(255,255,255,.72); max-width:34rem; }
+  .hero__actions { display:flex; flex-wrap:wrap; align-items:center; gap:1.5rem; }
+  .hero__secondary { display:inline-flex; align-items:center; gap:.5rem; font-weight:600; color:var(--blue); text-decoration:none; border-bottom:1px solid transparent; transition:border-color .2s,gap .2s; }
+  .hero__secondary:hover { border-bottom-color:var(--blue); gap:.75rem; }
+  @media (max-width:48rem) {
+    nav .links { display:none; }
+    .hero__video { object-position:62% 50%; opacity:.55; }
+    .hero__scrim--left { background:linear-gradient(180deg, rgba(11,17,32,.85) 0%, rgba(11,17,32,.55) 60%, var(--dark) 100%); }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .hero__video { display:none; }
+    .hero__media { background:var(--dark) url('https://d2ol7oe51mr4n9.cloudfront.net/user_3GCezMneHZNTVInH88hJayW11TO/802125f6-e08f-44a0-9ada-0b271c5dc656.jpg') 68% 50% / cover no-repeat; }
+  }
+  .next { max-width:72rem; margin:0 auto; padding:5rem 2rem; border-top:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.5); }
+</style>
+</head>
+<body>
+<nav><div class="in">
+  <a class="brand" href="#"><svg width="36" height="36" viewBox="30 30 340 389" fill="none"><path d="M200 40L360 132.385V317.154L200 409.538L40 317.154V132.385L200 40Z" stroke="#00D4FF" stroke-width="20" stroke-linejoin="round"/><path d="M200 90C200 90 110 160 110 240C110 320 200 370 200 370C200 370 290 320 290 240C290 160 200 90 200 90Z" fill="#4ADE80"/><path d="M200 170V350" stroke="#0C1319" stroke-width="14" stroke-linecap="round"/><path d="M200 280L145 225" stroke="#0C1319" stroke-width="14" stroke-linecap="round"/><path d="M200 250L255 195" stroke="#0C1319" stroke-width="14" stroke-linecap="round"/></svg><span>CANOPY</span></a>
+  <div class="links"><a>Home</a><a>Product</a><a>Blog</a><a>About</a></div>
+  <a class="btn-secondary" href="#">Get in touch</a>
+</div></nav>
+<main>
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    <video class="hero__video" autoplay muted loop playsinline preload="metadata"
+      poster="https://d2ol7oe51mr4n9.cloudfront.net/user_3GCezMneHZNTVInH88hJayW11TO/802125f6-e08f-44a0-9ada-0b271c5dc656.jpg">
+      <source src="https://d2ol7oe51mr4n9.cloudfront.net/user_3GCezMneHZNTVInH88hJayW11TO/2b65860d-3322-4187-b281-922070ab6329.mp4" type="video/mp4">
+    </video>
+    <div class="hero__scrim hero__scrim--left"></div>
+    <div class="hero__scrim hero__scrim--top"></div>
+    <div class="hero__scrim hero__scrim--bottom"></div>
+  </div>
+  <div class="hero__inner">
+    <div class="hero__copy">
+      <p class="hero__eyebrow">Connected irrigation for container nurseries</p>
+      <h1 id="hero-title" class="hero__title">Your crew is walking zones to find out what the water already knows.</h1>
+      <p class="hero__sub">Canopy connects every irrigation zone in the yard to one system that decides runtimes from live conditions — so watering stops being a judgment call on every zone, every week.</p>
+      <div class="hero__actions">
+        <button class="btn-primary">Request a demo</button>
+        <a class="hero__secondary" href="#">See how it works <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="next">Next section starts here (stats band).</div>
+</main>
+</body>
+</html>
