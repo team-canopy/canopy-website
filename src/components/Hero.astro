@@ -1,0 +1,221 @@
+---
+/**
+ * Hero: full-bleed looping nursery diorama (Stord-style) with copy on the
+ * calm left third of the frame.
+ *
+ * Video assets live in /public/hero (see /public/hero/README.md for the
+ * download links + regen recipe). Copy follows Canopy's approved operating-
+ * layer positioning, with one primary action above the fold and a secondary
+ * text link.
+ */
+import DemoForm from '~/components/DemoForm';
+
+interface Props {
+  eyebrow?: string;
+  headline?: string;
+  sub?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+  video?: string;
+  videoWebm?: string;
+  poster?: string;
+}
+
+const {
+  eyebrow = 'The operating layer for growers',
+  headline = 'Connect every decision to the work that matters.',
+  sub = 'Canopy is building the operating layer that brings changing signals together so teams can see what matters now, prioritize labor, and coordinate every shift. It keeps throughput and cost in view alongside the systems they already rely on.',
+  secondaryHref = '/about',
+  secondaryLabel = 'See how it works',
+  video = '/hero/canopy-hero-loop.mp4',
+  videoWebm,
+  poster = '/hero/canopy-hero-poster.jpg',
+} = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <!-- Background loop. Decorative: hidden from AT, no controls, muted so autoplay is allowed. -->
+  <div class="hero__media" aria-hidden="true">
+    <video
+      class="hero__video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster={poster}
+      disablepictureinpicture
+    >
+      {videoWebm && <source src={videoWebm} type="video/webm" />}
+      <source src={video} type="video/mp4" />
+    </video>
+    <div class="hero__scrim hero__scrim--left"></div>
+    <div class="hero__scrim hero__scrim--top"></div>
+    <div class="hero__scrim hero__scrim--bottom"></div>
+  </div>
+
+  <div class="hero__inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="hero__copy">
+      <p class="hero__eyebrow">{eyebrow}</p>
+      <h1 id="hero-title" class="hero__title">{headline}</h1>
+      <p class="hero__sub">{sub}</p>
+      <div class="hero__actions">
+        <DemoForm client:load label="Request a demo" />
+        <a href={secondaryHref} class="hero__secondary">
+          {secondaryLabel}
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Only brand tokens + rem/vw here. Two hues: green on the CTA (global .btn-primary), cyan on the eyebrow/link. */
+  .hero {
+    position: relative;
+    min-height: calc(100vh - 4rem); /* nav is 4rem */
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--canopy-dark, #0b1120);
+    isolation: isolate;
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* The diorama's calm third is on the left of the frame; bias the crop so the
+       busy right side stays visible when the viewport is narrower than 16:9. */
+    object-position: 68% 50%;
+  }
+
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .hero__scrim--left {
+    background: linear-gradient(
+      90deg,
+      var(--canopy-dark, #0b1120) 0%,
+      color-mix(in srgb, var(--canopy-dark, #0b1120) 92%, transparent) 28%,
+      color-mix(in srgb, var(--canopy-dark, #0b1120) 45%, transparent) 52%,
+      transparent 72%
+    );
+  }
+  .hero__scrim--top {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--canopy-dark, #0b1120) 70%, transparent), transparent 22%);
+  }
+  .hero__scrim--bottom {
+    background: linear-gradient(0deg, var(--canopy-dark, #0b1120), transparent 26%);
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding-block: clamp(4rem, 12vh, 8rem);
+  }
+
+  .hero__copy {
+    max-width: 40rem;
+  }
+
+  .hero__eyebrow {
+    margin: 0 0 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--canopy-blue, #00d4ff);
+  }
+
+  .hero__title {
+    margin: 0 0 1.5rem;
+    font-size: clamp(2.25rem, 5.2vw, 4.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--canopy-text-primary, #fff);
+    text-wrap: balance;
+  }
+
+  .hero__sub {
+    margin: 0 0 2.25rem;
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--canopy-text-secondary, rgba(255, 255, 255, 0.72));
+    max-width: 34rem;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .hero__secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--canopy-blue, #00d4ff);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s, gap 0.2s;
+  }
+  .hero__secondary:hover {
+    border-bottom-color: var(--canopy-blue, #00d4ff);
+    gap: 0.75rem;
+  }
+
+  /* Narrow viewports: the diorama becomes a texture behind the copy; darken more. */
+  @media (max-width: 48rem) {
+    .hero__video {
+      object-position: 62% 50%;
+      opacity: 0.55;
+    }
+    .hero__scrim--left {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--canopy-dark, #0b1120) 85%, transparent) 0%,
+        color-mix(in srgb, var(--canopy-dark, #0b1120) 55%, transparent) 60%,
+        var(--canopy-dark, #0b1120) 100%
+      );
+    }
+  }
+
+  /* Reduced motion: show the still, never the loop. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero__video {
+      display: none;
+    }
+    .hero__media {
+      background: var(--canopy-dark, #0b1120) url('/hero/canopy-hero-poster.jpg') 68% 50% / cover no-repeat;
+    }
+  }
+</style>
+
+<script>
+  // Save bandwidth on constrained connections: keep the poster, skip the loop.
+  const conn = (navigator as any).connection;
+  if (conn && (conn.saveData || /2g/.test(conn.effectiveType || ''))) {
+    document.querySelectorAll<HTMLVideoElement>('.hero__video').forEach((v) => {
+      v.removeAttribute('autoplay');
+      v.pause();
+      v.querySelectorAll('source').forEach((s) => s.remove());
+      v.load();
+    });
+  }
+</script>

@@ -52,6 +52,12 @@ heroImage: "/images/your-image.jpg"  # optional
 Your content here...
 ```
 
+## Content Style
+
+Do not use em dashes in user-facing website copy, page metadata, accessible text,
+email templates, or content entries. Rewrite with short sentences, commas, colons,
+or parentheses so the language stays direct and readable.
+
 ## Deployment
 
 Push to the `main` branch and Vercel will automatically deploy.

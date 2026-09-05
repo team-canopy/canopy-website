@@ -1,6 +1,6 @@
 ---
 title: "Welcome to Canopy"
-description: "Introducing Canopy — a new way to think about agriculture technology"
+description: "Introducing Canopy: a new way to think about agriculture technology"
 pubDate: 2026-02-09
 draft: false
 tags: ["announcement", "canopy"]
