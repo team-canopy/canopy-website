@@ -109,7 +109,7 @@ async function sendFallbackEmail(s: {
       to: ['hello@canopy.ag'],
       subject: `Demo Request (email fallback): ${s.companyName}`,
       html: `
-        <h2>New Demo Request (stored via email fallback — DB ingest unavailable)</h2>
+        <h2>New Demo Request (stored via email fallback because DB ingest is unavailable)</h2>
         <p><strong>Company:</strong> ${s.companyName}</p>
         <p><strong>Contact:</strong> ${s.contactName}</p>
         <p><strong>Email:</strong> ${s.email}</p>
