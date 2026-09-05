@@ -1,93 +1,965 @@
 ---
+import DemoForm from '~/components/DemoForm';
 import Layout from '~/layouts/Layout.astro';
+
+const signals = ['Quality', 'Weather', 'Irrigation', 'IoT', 'Existing systems'];
+
+const shiftMoments = [
+  {
+    label: 'The plan',
+    title: 'Labor is committed early.',
+    body: 'The crew and the hours are largely set before the day begins.',
+  },
+  {
+    label: 'The change',
+    title: 'The operation keeps moving.',
+    body: 'Weather, crop conditions, quality, and irrigation change what the day needs.',
+  },
+  {
+    label: 'The decision',
+    title: 'The team needs a new priority.',
+    body: 'The valuable question is not what changed. It is what the crew should do now.',
+  },
+];
 ---
 
-<Layout title="About - Canopy">
-  <!-- Hero -->
-  <div class="relative py-20 border-b border-white/10">
-    <div class="absolute inset-0 bg-gradient-to-b from-[#00D4FF]/5 to-transparent pointer-events-none"></div>
-    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-5xl font-bold mb-4 gradient-text">About Canopy</h1>
-      <p class="text-xl text-white/60">Building technology for the future of agriculture.</p>
-    </div>
-  </div>
+<Layout
+  title="About Canopy — clear priorities for growing operations"
+  description="Canopy is building an operating layer that turns changing conditions into clear labor priorities and coordinated work."
+>
+  <div class="about-page">
+    <section class="about-hero" aria-labelledby="about-title">
+      <div class="about-hero__grid" aria-hidden="true"></div>
 
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <!-- Mission -->
-    <section class="mb-16">
-      <h2 class="text-2xl font-semibold mb-6 text-[#00D4FF]">Our Mission</h2>
-      <p class="text-lg text-white/80 leading-relaxed mb-6">
-        Canopy is building the future of agriculture technology. We believe that data-driven 
-        insights and modern tools can help growers of all sizes optimize their operations 
-        and build more sustainable, profitable businesses.
-      </p>
-      <p class="text-lg text-white/80 leading-relaxed">
-        From small urban farms to large commercial operations, we're creating accessible 
-        technology that transforms how we grow food.
-      </p>
+      <div class="shell about-hero__inner">
+        <div class="about-hero__copy">
+          <p class="section-kicker">An operating layer for growers</p>
+          <h1 id="about-title">Make every shift move the business forward.</h1>
+          <p class="about-hero__lead">
+            Growers do not need more data. They need clarity on what matters now. Canopy is
+            building the layer that turns changing conditions into clear labor priorities and
+            coordinated work.
+          </p>
+          <DemoForm client:load label="Request a demo" className="btn-primary text-base px-8 py-4" />
+        </div>
+
+        <figure class="operations-field">
+          <figcaption class="sr-only">
+            Operational signals flow into clear priorities, coordinated work, throughput, and cost.
+          </figcaption>
+
+          <div class="operations-field__header" aria-hidden="true">
+            <span>Changing conditions</span>
+            <span>Shift view</span>
+          </div>
+
+          <ul class="signal-grid" aria-hidden="true">
+            {signals.map((signal) => (
+              <li><span class="signal-dot"></span>{signal}</li>
+            ))}
+          </ul>
+
+          <div class="field-trace" aria-hidden="true"><span></span></div>
+
+          <div class="priority-core" aria-hidden="true">
+            <span class="priority-core__mark"></span>
+            <div>
+              <span>What matters now</span>
+              <strong>Clear priorities</strong>
+            </div>
+          </div>
+
+          <div class="field-trace field-trace--out" aria-hidden="true"><span></span></div>
+
+          <div class="work-output" aria-hidden="true">
+            <div class="work-output__primary">
+              <span>Work</span>
+              <strong>Coordinated shift</strong>
+            </div>
+            <div class="work-output__outcomes">
+              <span>Throughput</span>
+              <span>Cost</span>
+            </div>
+          </div>
+        </figure>
+      </div>
     </section>
 
-    <!-- What We Do -->
-    <section class="mb-16">
-      <h2 class="text-2xl font-semibold mb-6 text-[#00D4FF]">What We Do</h2>
-      <div class="grid sm:grid-cols-2 gap-6">
-        <div class="glass rounded-xl p-6">
-          <div class="w-10 h-10 rounded-lg bg-[#00D4FF]/10 flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-[#00D4FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-            </svg>
-          </div>
-          <h3 class="font-semibold mb-2">Data Analytics</h3>
-          <p class="text-white/60 text-sm">Real-time insights tailored for horticulture operations.</p>
+    <section class="section section--problem" aria-labelledby="problem-title">
+      <div class="shell problem-layout">
+        <div class="section-intro">
+          <p class="section-kicker">The operating problem</p>
+          <h2 id="problem-title">The day changes after the plan is made.</h2>
+          <p>
+            Labor capacity is mostly fixed. The conditions competing for that capacity are not.
+            Operations managers carry the work of continuously reconciling the two.
+          </p>
         </div>
-        
-        <div class="glass rounded-xl p-6">
-          <div class="w-10 h-10 rounded-lg bg-[#00D4FF]/10 flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-[#00D4FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-            </svg>
+
+        <ol class="shift-sequence">
+          {shiftMoments.map((moment, index) => (
+            <li>
+              <div class="shift-sequence__index" aria-hidden="true">{index + 1}</div>
+              <div>
+                <span>{moment.label}</span>
+                <h3>{moment.title}</h3>
+                <p>{moment.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section--flow" aria-labelledby="flow-title">
+      <div class="shell">
+        <div class="flow-heading">
+          <div>
+            <p class="section-kicker">From signal to outcome</p>
+            <h2 id="flow-title">Turn what changed into what happens next.</h2>
           </div>
-          <h3 class="font-semibold mb-2">Community</h3>
-          <p class="text-white/60 text-sm">Connect with growers and share best practices.</p>
+          <p>
+            Quality, weather, irrigation, IoT, and business systems are inputs. Their value is
+            realized when the team can translate them into priorities and work.
+          </p>
         </div>
-        
-        <div class="glass rounded-xl p-6">
-          <div class="w-10 h-10 rounded-lg bg-[#00D4FF]/10 flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-[#00D4FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-          </div>
-          <h3 class="font-semibold mb-2">Integrations</h3>
-          <p class="text-white/60 text-sm">Works with your existing farm management systems.</p>
+
+        <ol class="system-flow">
+          <li class="system-flow__signals">
+            <span class="system-flow__label">Signals</span>
+            <strong>Changing conditions</strong>
+            <ul>
+              {signals.map((signal) => <li>{signal}</li>)}
+            </ul>
+          </li>
+          <li class="system-flow__priority">
+            <span class="system-flow__label">Clarity</span>
+            <strong>Current priorities</strong>
+            <p>A shared view of what matters now.</p>
+          </li>
+          <li>
+            <span class="system-flow__label">Action</span>
+            <strong>Coordinated work</strong>
+            <p>Labor directed toward the highest-value tasks.</p>
+          </li>
+          <li>
+            <span class="system-flow__label">Business outcomes</span>
+            <strong>Throughput and cost</strong>
+            <p>The measures that connect the shift to the business.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section--fit" aria-labelledby="fit-title">
+      <div class="shell fit-layout">
+        <div class="section-intro">
+          <p class="section-kicker">Built to fit the operation</p>
+          <h2 id="fit-title">Keep the systems you already rely on.</h2>
+          <p>
+            Canopy complements the ERP and other business systems already in place. Those systems
+            remain. Canopy focuses on the operating question between them and the crew: what should
+            happen now?
+          </p>
         </div>
-        
-        <div class="glass rounded-xl p-6">
-          <div class="w-10 h-10 rounded-lg bg-[#00D4FF]/10 flex items-center justify-center mb-4">
-            <svg class="w-5 h-5 text-[#00D4FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+
+        <figure class="operating-stack">
+          <figcaption class="sr-only">
+            Existing business systems and operational signals connect through the Canopy operating
+            layer to prioritized work for the operations team.
+          </figcaption>
+          <div class="operating-stack__layer operating-stack__layer--systems" aria-hidden="true">
+            <span>Systems already in place</span>
+            <strong>ERP and business systems</strong>
           </div>
-          <h3 class="font-semibold mb-2">Best Practices</h3>
-          <p class="text-white/60 text-sm">Industry benchmarks and proven methodologies.</p>
+          <div class="operating-stack__join" aria-hidden="true">
+            <span>Operational signals</span>
+          </div>
+          <div class="operating-stack__layer operating-stack__layer--canopy" aria-hidden="true">
+            <span>Canopy</span>
+            <strong>Operating priorities</strong>
+          </div>
+          <div class="operating-stack__join operating-stack__join--work" aria-hidden="true">
+            <span>Clear direction</span>
+          </div>
+          <div class="operating-stack__layer operating-stack__layer--team" aria-hidden="true">
+            <span>The operations team</span>
+            <strong>Coordinated work</strong>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section--direction" aria-labelledby="direction-title">
+      <div class="shell direction-layout">
+        <div class="direction-panel direction-panel--today">
+          <p class="section-kicker">Deployed foundation</p>
+          <h2 id="direction-title">Grounded in the operation.</h2>
+          <p>
+            Canopy irrigation is already deployed at customer facilities. That footprint is
+            supporting proof that Canopy can connect operational software with real IoT systems
+            close to the work.
+          </p>
+        </div>
+
+        <div class="direction-rule" aria-hidden="true"><span></span></div>
+
+        <div class="direction-panel direction-panel--next">
+          <p class="section-kicker">Product direction</p>
+          <h2>Building toward the whole shift.</h2>
+          <p>
+            Labor forecasting and orchestration are core product priorities: helping teams plan
+            capacity, respond as conditions change, and coordinate the work that matters most.
+            That direction is distinct from shipped proof, and we will keep the difference clear.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="glass rounded-2xl p-8 text-center">
-      <h2 class="text-2xl font-semibold mb-4">Get in Touch</h2>
-      <p class="text-white/60 mb-6">
-        Interested in learning more or partnering with us? We'd love to hear from you.
-      </p>
-      <a 
-        href="mailto:hello@canopy.ag" 
-        class="btn-primary inline-flex items-center gap-2"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
-        hello@canopy.ag
-      </a>
+    <section class="section section--cta" aria-labelledby="cta-title">
+      <div class="shell cta-panel">
+        <p class="section-kicker">Start with the work</p>
+        <h2 id="cta-title">Where does your plan break?</h2>
+        <p>
+          Tell us how your team plans labor today, what changes after the shift begins, and where
+          clearer priorities would help.
+        </p>
+        <DemoForm client:load label="Request a demo" className="btn-primary text-base px-8 py-4" />
+      </div>
     </section>
   </div>
 </Layout>
+
+<style>
+  .about-page {
+    --about-dark: var(--canopy-dark, #0b1120);
+    --about-darker: var(--canopy-darker, #070f1a);
+    --about-card: var(--canopy-card, #111d2f);
+    --about-green: var(--canopy-green, #22c55e);
+    --about-green-light: var(--canopy-green-light, #4ade80);
+    --about-blue: var(--canopy-blue, #00d4ff);
+    --about-text: var(--canopy-text-primary, #fff);
+    --about-muted: var(--canopy-text-secondary, rgba(255, 255, 255, 0.7));
+    color: var(--about-text);
+    overflow: hidden;
+  }
+
+  .shell {
+    width: min(calc(100% - 2rem), 75rem);
+    margin-inline: auto;
+  }
+
+  .section {
+    position: relative;
+    padding-block: clamp(5rem, 10vw, 8rem);
+  }
+
+  .section-kicker {
+    margin: 0 0 1.25rem;
+    color: var(--about-blue);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .section h2 {
+    margin: 0;
+    max-width: 14ch;
+    color: var(--about-text);
+    font-size: clamp(2.25rem, 5vw, 4.25rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .section-intro > p:last-child,
+  .flow-heading > p,
+  .direction-panel > p:last-child,
+  .cta-panel > p:not(.section-kicker) {
+    color: var(--about-muted);
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    line-height: 1.7;
+  }
+
+  .about-hero {
+    position: relative;
+    min-height: min(54rem, calc(100svh - 4rem));
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid color-mix(in srgb, var(--about-blue) 12%, transparent);
+    background:
+      radial-gradient(circle at 82% 30%, color-mix(in srgb, var(--about-blue) 12%, transparent), transparent 34rem),
+      linear-gradient(155deg, var(--about-dark), var(--about-darker));
+  }
+
+  .about-hero__grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.16;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--about-blue) 24%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--about-blue) 24%, transparent) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+    mask-image: linear-gradient(90deg, transparent, black 48%, black 100%);
+  }
+
+  .about-hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(23rem, 0.95fr);
+    gap: clamp(3rem, 7vw, 7rem);
+    align-items: center;
+    padding-block: clamp(5rem, 10vh, 8rem);
+  }
+
+  .about-hero__copy h1 {
+    margin: 0;
+    max-width: 13ch;
+    font-size: clamp(3rem, 6.5vw, 5.75rem);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .about-hero__lead {
+    max-width: 37rem;
+    margin: 2rem 0 2.5rem;
+    color: var(--about-muted);
+    font-size: clamp(1.1rem, 1.55vw, 1.3rem);
+    line-height: 1.65;
+  }
+
+  .operations-field {
+    position: relative;
+    margin: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid color-mix(in srgb, var(--about-blue) 24%, transparent);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--about-card) 76%, transparent);
+    box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(16px);
+  }
+
+  .operations-field::before {
+    content: '';
+    position: absolute;
+    inset: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--about-blue) 8%, transparent);
+    border-radius: 0.65rem;
+    pointer-events: none;
+  }
+
+  .operations-field__header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    color: color-mix(in srgb, var(--about-text) 46%, transparent);
+    font-size: 0.75rem;
+  }
+
+  .signal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .signal-grid li {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--about-blue) 14%, transparent);
+    border-radius: 0.55rem;
+    color: color-mix(in srgb, var(--about-text) 76%, transparent);
+    background: rgba(255, 255, 255, 0.025);
+    font-size: 0.83rem;
+  }
+
+  .signal-grid li:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .signal-dot {
+    width: 0.42rem;
+    height: 0.42rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--about-blue);
+    box-shadow: 0 0 0.75rem color-mix(in srgb, var(--about-blue) 55%, transparent);
+  }
+
+  .field-trace {
+    position: relative;
+    width: 1px;
+    height: 2rem;
+    margin-inline: auto;
+    background: color-mix(in srgb, var(--about-blue) 36%, transparent);
+  }
+
+  .field-trace span {
+    position: absolute;
+    bottom: -0.2rem;
+    left: 50%;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 1px solid var(--about-blue);
+    border-bottom: 1px solid var(--about-blue);
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .field-trace--out {
+    background: color-mix(in srgb, var(--about-green) 38%, transparent);
+  }
+
+  .field-trace--out span {
+    border-color: var(--about-green);
+  }
+
+  .priority-core {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid color-mix(in srgb, var(--about-green) 46%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--about-green) 10%, var(--about-card));
+    box-shadow: 0 0 2.5rem color-mix(in srgb, var(--about-green) 12%, transparent);
+  }
+
+  .priority-core__mark {
+    position: relative;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex: 0 0 auto;
+    border: 1px solid var(--about-green-light);
+    border-radius: 50%;
+  }
+
+  .priority-core__mark::after {
+    content: '';
+    position: absolute;
+    inset: 0.34rem;
+    border-radius: 50%;
+    background: var(--about-green);
+    box-shadow: 0 0 1rem color-mix(in srgb, var(--about-green) 70%, transparent);
+  }
+
+  .priority-core span,
+  .work-output span {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: color-mix(in srgb, var(--about-text) 50%, transparent);
+    font-size: 0.72rem;
+  }
+
+  .priority-core strong,
+  .work-output strong {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .work-output {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem 1.1rem;
+    border-top: 1px solid color-mix(in srgb, var(--about-green) 26%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--about-green) 26%, transparent);
+  }
+
+  .work-output__outcomes {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .work-output__outcomes span {
+    margin: 0;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--about-green) 22%, transparent);
+    border-radius: 99rem;
+    color: color-mix(in srgb, var(--about-text) 72%, transparent);
+  }
+
+  .section--problem {
+    background: var(--about-darker);
+  }
+
+  .problem-layout,
+  .fit-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(26rem, 1.15fr);
+    gap: clamp(4rem, 9vw, 8rem);
+    align-items: start;
+  }
+
+  .section-intro > p:last-child {
+    max-width: 34rem;
+    margin: 1.75rem 0 0;
+  }
+
+  .shift-sequence {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .shift-sequence::before {
+    content: '';
+    position: absolute;
+    top: 1.25rem;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    width: 1px;
+    background: linear-gradient(var(--about-blue), var(--about-green));
+  }
+
+  .shift-sequence li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 1.25rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .shift-sequence li:last-child {
+    padding-bottom: 0;
+  }
+
+  .shift-sequence__index {
+    position: relative;
+    z-index: 1;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--about-blue) 52%, transparent);
+    border-radius: 50%;
+    color: var(--about-blue);
+    background: var(--about-darker);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .shift-sequence li:last-child .shift-sequence__index {
+    border-color: var(--about-green);
+    color: var(--about-green-light);
+  }
+
+  .shift-sequence span {
+    display: block;
+    margin: 0.1rem 0 0.35rem;
+    color: color-mix(in srgb, var(--about-text) 46%, transparent);
+    font-size: 0.78rem;
+  }
+
+  .shift-sequence h3 {
+    margin: 0;
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    font-weight: 600;
+  }
+
+  .shift-sequence p {
+    max-width: 36rem;
+    margin: 0.65rem 0 0;
+    color: var(--about-muted);
+    line-height: 1.65;
+  }
+
+  .section--flow {
+    border-block: 1px solid color-mix(in srgb, var(--about-blue) 10%, transparent);
+    background:
+      radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--about-green) 7%, transparent), transparent 34rem),
+      var(--about-dark);
+  }
+
+  .flow-heading {
+    display: grid;
+    grid-template-columns: 1.05fr 0.75fr;
+    gap: clamp(2rem, 8vw, 7rem);
+    align-items: end;
+    margin-bottom: clamp(3.5rem, 7vw, 5.5rem);
+  }
+
+  .flow-heading h2 {
+    max-width: 16ch;
+  }
+
+  .flow-heading > p {
+    max-width: 34rem;
+    margin: 0;
+  }
+
+  .system-flow {
+    display: grid;
+    grid-template-columns: 1.25fr 0.9fr 0.9fr 0.9fr;
+    margin: 0;
+    padding: 0;
+    border-block: 1px solid color-mix(in srgb, var(--about-blue) 16%, transparent);
+    list-style: none;
+  }
+
+  .system-flow > li {
+    position: relative;
+    min-height: 19rem;
+    padding: 2rem 1.5rem;
+    border-right: 1px solid color-mix(in srgb, var(--about-blue) 12%, transparent);
+  }
+
+  .system-flow > li:last-child {
+    border-right: 0;
+  }
+
+  .system-flow > li + li::before {
+    content: '';
+    position: absolute;
+    top: 3.2rem;
+    left: -0.3rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-top: 1px solid var(--about-blue);
+    border-right: 1px solid var(--about-blue);
+    background: var(--about-dark);
+    transform: rotate(45deg);
+  }
+
+  .system-flow__priority {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--about-green) 11%, transparent), transparent);
+  }
+
+  .system-flow__priority::before {
+    border-color: var(--about-green) !important;
+  }
+
+  .system-flow__label {
+    display: block;
+    margin-bottom: 1.5rem;
+    color: var(--about-blue);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .system-flow strong {
+    display: block;
+    min-height: 4rem;
+    font-size: clamp(1.25rem, 2vw, 1.55rem);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .system-flow p {
+    margin: 1.25rem 0 0;
+    color: var(--about-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .system-flow ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .system-flow ul li {
+    padding: 0.35rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--about-blue) 18%, transparent);
+    border-radius: 99rem;
+    color: color-mix(in srgb, var(--about-text) 62%, transparent);
+    font-size: 0.7rem;
+  }
+
+  .section--fit {
+    background: var(--about-darker);
+  }
+
+  .fit-layout {
+    align-items: center;
+  }
+
+  .operating-stack {
+    position: relative;
+    margin: 0;
+    padding: clamp(1rem, 3vw, 2rem);
+    border-left: 1px solid color-mix(in srgb, var(--about-blue) 20%, transparent);
+  }
+
+  .operating-stack__layer {
+    padding: 1.2rem 1.35rem;
+    border: 1px solid color-mix(in srgb, var(--about-blue) 17%, transparent);
+    background: color-mix(in srgb, var(--about-card) 68%, transparent);
+  }
+
+  .operating-stack__layer span,
+  .operating-stack__join span {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: color-mix(in srgb, var(--about-text) 48%, transparent);
+    font-size: 0.75rem;
+  }
+
+  .operating-stack__layer strong {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .operating-stack__layer--systems {
+    margin-right: 2.5rem;
+  }
+
+  .operating-stack__layer--canopy {
+    margin-left: 2.5rem;
+    border-color: color-mix(in srgb, var(--about-green) 48%, transparent);
+    background: color-mix(in srgb, var(--about-green) 10%, var(--about-card));
+    box-shadow: 0 0 2.5rem color-mix(in srgb, var(--about-green) 10%, transparent);
+  }
+
+  .operating-stack__layer--canopy span {
+    color: var(--about-green-light);
+  }
+
+  .operating-stack__layer--team {
+    margin-right: 2.5rem;
+  }
+
+  .operating-stack__join {
+    position: relative;
+    height: 3.5rem;
+    display: grid;
+    place-items: center;
+  }
+
+  .operating-stack__join::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 50%;
+    width: 1px;
+    background: color-mix(in srgb, var(--about-blue) 34%, transparent);
+  }
+
+  .operating-stack__join span {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 0.25rem 0.55rem;
+    background: var(--about-darker);
+  }
+
+  .operating-stack__join--work::before {
+    background: color-mix(in srgb, var(--about-green) 40%, transparent);
+  }
+
+  .section--direction {
+    background: var(--about-dark);
+  }
+
+  .direction-layout {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .direction-panel h2 {
+    max-width: 13ch;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .direction-panel > p:last-child {
+    max-width: 34rem;
+    margin: 1.5rem 0 0;
+  }
+
+  .direction-panel--next .section-kicker {
+    color: var(--about-green-light);
+  }
+
+  .direction-rule {
+    position: relative;
+    background: color-mix(in srgb, var(--about-blue) 18%, transparent);
+  }
+
+  .direction-rule span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--about-green);
+    box-shadow: 0 0 1.2rem color-mix(in srgb, var(--about-green) 70%, transparent);
+    transform: translate(-50%, -50%);
+  }
+
+  .section--cta {
+    padding-top: 3rem;
+    background: var(--about-dark);
+  }
+
+  .cta-panel {
+    padding: clamp(3rem, 7vw, 6rem);
+    border: 1px solid color-mix(in srgb, var(--about-green) 22%, transparent);
+    background:
+      radial-gradient(circle at 85% 20%, color-mix(in srgb, var(--about-green) 12%, transparent), transparent 22rem),
+      color-mix(in srgb, var(--about-card) 74%, transparent);
+  }
+
+  .cta-panel h2 {
+    max-width: 15ch;
+  }
+
+  .cta-panel > p:not(.section-kicker) {
+    max-width: 40rem;
+    margin: 1.5rem 0 2.25rem;
+  }
+
+  @media (max-width: 60rem) {
+    .about-hero__inner,
+    .problem-layout,
+    .fit-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .about-hero__copy {
+      max-width: 46rem;
+    }
+
+    .operations-field {
+      width: min(100%, 38rem);
+      margin-inline: auto;
+    }
+
+    .problem-layout,
+    .fit-layout {
+      gap: 3.5rem;
+    }
+
+    .flow-heading {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
+    .system-flow {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .system-flow > li:nth-child(2) {
+      border-right: 0;
+    }
+
+    .system-flow > li:nth-child(n + 3) {
+      border-top: 1px solid color-mix(in srgb, var(--about-blue) 12%, transparent);
+    }
+
+    .system-flow > li:nth-child(3)::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .shell {
+      width: min(calc(100% - 1.5rem), 75rem);
+    }
+
+    .about-hero {
+      min-height: auto;
+    }
+
+    .about-hero__inner {
+      padding-block: 4rem;
+    }
+
+    .about-hero__copy h1 {
+      font-size: clamp(2.85rem, 14vw, 4.25rem);
+    }
+
+    .operations-field {
+      padding: 1rem;
+    }
+
+    .work-output {
+      grid-template-columns: 1fr;
+    }
+
+    .work-output__outcomes {
+      justify-content: flex-start;
+    }
+
+    .system-flow {
+      grid-template-columns: 1fr;
+    }
+
+    .system-flow > li {
+      min-height: 0;
+      padding: 1.75rem 0.75rem;
+      border-right: 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--about-blue) 12%, transparent);
+    }
+
+    .system-flow > li:last-child {
+      border-bottom: 0;
+    }
+
+    .system-flow > li:nth-child(n + 3) {
+      border-top: 0;
+    }
+
+    .system-flow > li + li::before,
+    .system-flow > li:nth-child(3)::before {
+      top: -0.3rem;
+      left: 1rem;
+      display: block;
+      transform: rotate(135deg);
+    }
+
+    .system-flow strong {
+      min-height: 0;
+    }
+
+    .operating-stack {
+      padding-inline: 0.75rem 0;
+    }
+
+    .operating-stack__layer--systems,
+    .operating-stack__layer--team {
+      margin-right: 1.25rem;
+    }
+
+    .operating-stack__layer--canopy {
+      margin-left: 1.25rem;
+    }
+
+    .direction-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .direction-rule {
+      width: 100%;
+      height: 1px;
+    }
+
+    .cta-panel {
+      padding: 2rem 1.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-page *,
+    .about-page *::before,
+    .about-page *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>

@@ -17,7 +17,15 @@ interface FormErrors {
 
 const API_ENDPOINT = '/api/submit-demo';
 
-export default function DemoForm() {
+interface DemoFormProps {
+  label?: string;
+  className?: string;
+}
+
+export default function DemoForm({
+  label = 'Request a Demo',
+  className = 'btn-primary text-lg px-10 py-4',
+}: DemoFormProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -131,9 +139,9 @@ export default function DemoForm() {
       {/* CTA Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="btn-primary text-lg px-10 py-4"
+        className={className}
       >
-        Request a Demo
+        {label}
       </button>
 
       {/* Modal */}
