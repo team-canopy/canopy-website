@@ -1,0 +1,30 @@
+---
+import type { BlogEntry } from '~/lib/blog/collection';
+
+interface Props {
+  prev?: BlogEntry;
+  next?: BlogEntry;
+}
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="blog-prevnext" aria-label="Neighbouring posts">
+    {prev ? (
+      <a href={`/blog/${prev.id}`} class="blog-prevnext__link">
+        <small>Previous</small>
+        <b>{prev.data.title}</b>
+      </a>
+    ) : (
+      <span class="blog-prevnext__link blog-prevnext__link--empty" aria-hidden="true"></span>
+    )}
+    {next ? (
+      <a href={`/blog/${next.id}`} class="blog-prevnext__link blog-prevnext__link--next">
+        <small>Next</small>
+        <b>{next.data.title}</b>
+      </a>
+    ) : (
+      <span class="blog-prevnext__link blog-prevnext__link--empty" aria-hidden="true"></span>
+    )}
+  </nav>
+)}

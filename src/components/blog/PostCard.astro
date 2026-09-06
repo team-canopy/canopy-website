@@ -1,0 +1,45 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import type { BlogEntry } from '~/lib/blog/collection';
+import { tagLabel } from '~/lib/blog/tags';
+import Byline from './Byline.astro';
+import DraftBadge from './DraftBadge.astro';
+
+interface Props {
+  post: BlogEntry;
+  featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+const { remarkPluginFrontmatter } = await render(post);
+const minutesRead = remarkPluginFrontmatter.minutesRead as number | undefined;
+const href = `/blog/${post.id}`;
+const primaryTag = post.data.tags[0];
+---
+
+<article class:list={['blog-card', { 'blog-card--featured': featured }]} data-tags={post.data.tags.join(' ')}>
+  {post.data.heroImage && (
+    <a href={href} class="blog-card__media" tabindex="-1" aria-hidden="true">
+      <Image
+        src={post.data.heroImage}
+        alt=""
+        widths={featured ? [640, 1280] : [400, 800]}
+        sizes={featured ? '(max-width: 900px) 100vw, 640px' : '(max-width: 900px) 100vw, 360px'}
+        format="webp"
+        loading={featured ? 'eager' : 'lazy'}
+        class="blog-card__img"
+      />
+    </a>
+  )}
+  <div class="blog-card__body">
+    <p class="blog-tagline">
+      {primaryTag && <a href={`/blog/tag/${primaryTag}`} class="blog-tagline__tag">{tagLabel(primaryTag)}</a>}
+      {minutesRead && <span>{minutesRead} min read</span>}
+      {post.data.draft && <DraftBadge />}
+    </p>
+    <h3 class="blog-card__title"><a href={href}>{post.data.title}</a></h3>
+    <p class="blog-card__excerpt">{post.data.description}</p>
+    <Byline post={post} compact />
+  </div>
+</article>

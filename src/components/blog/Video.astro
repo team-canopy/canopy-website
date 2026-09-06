@@ -1,0 +1,20 @@
+---
+import { YouTube } from '@astro-community/astro-embed-youtube';
+
+interface Props {
+  /** YouTube video id, or a full YouTube URL. */
+  id: string;
+  title: string;
+  caption?: string;
+  /** Start offset in seconds. */
+  start?: number;
+}
+
+const { id, title, caption, start } = Astro.props;
+const params = start ? `start=${start}` : undefined;
+---
+
+<figure class="blog-figure blog-video">
+  <YouTube id={id} title={title} playlabel={`Play: ${title}`} posterQuality="high" params={params} />
+  {caption && <figcaption class="blog-caption">{caption}</figcaption>}
+</figure>

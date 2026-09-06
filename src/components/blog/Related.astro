@@ -1,0 +1,23 @@
+---
+import type { BlogEntry } from '~/lib/blog/collection';
+import { tagLabel } from '~/lib/blog/tags';
+import PostCard from './PostCard.astro';
+
+interface Props {
+  posts: BlogEntry[];
+  /** The current post's first tag drives the heading. */
+  tag?: string;
+}
+const { posts, tag } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class="blog-container blog-related" aria-labelledby="related-title">
+    <h2 id="related-title" class="blog-grid-label">
+      {tag ? `More on ${tagLabel(tag).toLowerCase()}` : 'More from the blog'}
+    </h2>
+    <div class="blog-grid">
+      {posts.map((p) => <PostCard post={p} />)}
+    </div>
+  </section>
+)}

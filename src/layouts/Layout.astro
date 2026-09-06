@@ -5,9 +5,20 @@ import { activeLogos } from '../lib/brand';
 interface Props {
   title: string;
   description?: string;
+  /** Absolute URL for og:image. Defaults to the hero poster. */
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  /** Absolute canonical URL. Defaults to the current page. */
+  canonical?: string;
 }
 
-const { title, description = 'Canopy - Growing the future of agriculture' } = Astro.props;
+const {
+  title,
+  description = 'Canopy - Growing the future of agriculture',
+  ogImage = new URL('/hero/canopy-hero-poster.jpg', Astro.site).href,
+  ogType = 'website',
+  canonical = new URL(Astro.url.pathname, Astro.site).href,
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -18,6 +29,16 @@ const { title, description = 'Canopy - Growing the future of agriculture' } = As
     <link rel="icon" type="image/svg+xml" href={activeLogos.favicon} />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title="Canopy blog" href="/rss.xml" />
+    <meta property="og:site_name" content="Canopy" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <slot name="head" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
