@@ -95,6 +95,8 @@
 .blog-figure__img { display: block; }
 .blog-caption { margin-top: 0.625rem; padding-left: 0.75rem; border-left: 2px solid var(--blog-green); color: var(--blog-text-60); font-size: 0.8125rem; line-height: 1.5; }
 .blog-caption__credit { color: var(--blog-text-40); }
+/* The post hero (direct child of the article) is capped so a portrait cover does not swallow the page. */
+.blog-post > .blog-figure--wide .blog-figure__img { max-height: 520px; object-fit: cover; }
 @media (min-width: 1024px) {
   .blog-figure--wide { margin-left: calc(-1 * var(--blog-bleed)); margin-right: calc(-1 * var(--blog-bleed)); }
 }
