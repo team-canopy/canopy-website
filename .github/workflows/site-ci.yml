@@ -1,8 +1,10 @@
 name: Site CI
 
 # Build gate for the Astro site. Runs on every PR and on main.
-# Needs the GH_PACKAGES_READ_TOKEN repo secret (classic PAT, read:packages on canopy-ag)
-# because @canopy-ag/react-ui is published to GitHub Packages.
+# @canopy-ag/react-ui is published to GitHub Packages. Install auth prefers the
+# GH_PACKAGES_READ_TOKEN repo secret (classic PAT, read:packages on canopy-ag) and
+# falls back to the workflow's own GITHUB_TOKEN, which works once the react-ui
+# package grants this repo read access (package settings, Manage Actions access).
 on:
   pull_request:
   push:
@@ -10,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   build:
@@ -25,7 +28,7 @@ jobs:
       - name: Install
         run: npm ci --no-audit --no-fund
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: No em dashes in source or content (AGENTS.md)
         run: |
