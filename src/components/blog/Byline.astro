@@ -19,7 +19,12 @@ const initials = author.data.name
   .join('')
   .slice(0, 2)
   .toUpperCase();
-const date = post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+const date = post.data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
 ---
 
 <div class:list={['blog-byline', { 'blog-byline--compact': compact }]}>

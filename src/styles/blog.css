@@ -123,6 +123,7 @@
 
 .blog-pull { margin: 2.5rem 0; padding: 0 0 0 1.625rem; border-left: 3px solid var(--blog-green); font-style: normal; }
 .blog-pull__text p { font-size: 1.5rem; line-height: 1.35; font-weight: 500; letter-spacing: -0.01em; color: #fff; margin: 0 0 0.625rem; }
+.blog-pull__text p::before, .blog-pull__text p::after { content: none; }
 .blog-pull__cite { display: block; font-style: normal; color: var(--blog-text-40); font-size: 0.8125rem; }
 
 /* ---------- prose overrides (typography plugin uses :where, so these win) ---------- */

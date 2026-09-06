@@ -1,73 +1,75 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import { getCollection, render } from 'astro:content';
+import { getEntry, render } from 'astro:content';
+import PostLayout from '~/layouts/PostLayout.astro';
+import Byline from '~/components/blog/Byline.astro';
+import DraftBadge from '~/components/blog/DraftBadge.astro';
+import Figure from '~/components/blog/Figure.astro';
+import PrevNext from '~/components/blog/PrevNext.astro';
+import Related from '~/components/blog/Related.astro';
+import { mdxComponents } from '~/components/blog/mdx';
+import { getPublishedPosts } from '~/lib/blog/collection';
+import { prevNext, relatedPosts } from '~/lib/blog/posts';
+import { tagLabel } from '~/lib/blog/tags';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getPublishedPosts();
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const posts = await getPublishedPosts();
+const { Content, remarkPluginFrontmatter } = await render(post);
+const minutesRead = remarkPluginFrontmatter.minutesRead as number | undefined;
+const author = await getEntry(post.data.author);
+if (!author) throw new Error(`Unknown author "${post.data.author.id}" in ${post.id}`);
+const { prev, next } = prevNext(posts, post.id);
+const related = relatedPosts(posts, post.id, 3);
+const primaryTag = post.data.tags[0];
+const replyHref = `mailto:hello@canopy.ag?subject=${encodeURIComponent(`Re: ${post.data.title}`)}`;
 ---
 
-<Layout title={`${post.data.title} - Canopy Blog`} description={post.data.description}>
-  <article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Header -->
-    <header class="mb-12 text-center">
-      <div class="flex items-center justify-center gap-4 text-sm text-white/40 mb-6">
-        <time datetime={post.data.pubDate.toISOString()}>
-          {post.data.pubDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </time>
-        {post.data.tags.length > 0 && (
+<PostLayout post={post} authorName={author.data.name}>
+  <article class="blog-column blog-post">
+    <header>
+      <p class="blog-crumbs">
+        <a href="/blog">Blog</a>
+        {primaryTag && (
           <>
-            <span>•</span>
-            <div class="flex gap-2">
-              {post.data.tags.map((tag) => (
-                <span class="px-2 py-1 rounded-full bg-[#00D4FF]/10 text-[#00D4FF]">{tag}</span>
-              ))}
-            </div>
+            &nbsp;/&nbsp; <a href={`/blog/tag/${primaryTag}`}><b>{tagLabel(primaryTag)}</b></a>
           </>
         )}
+        {post.data.draft && (
+          <>
+            &nbsp; <DraftBadge />
+          </>
+        )}
+      </p>
+      <h1 class="blog-post__title">{post.data.title}</h1>
+      <p class="blog-post__dek">{post.data.description}</p>
+      <div class="blog-post__meta">
+        <Byline post={post} minutesRead={minutesRead} />
       </div>
-      <h1 class="text-4xl sm:text-5xl font-bold mb-6 gradient-text">{post.data.title}</h1>
-      <p class="text-xl text-white/60 max-w-2xl mx-auto">{post.data.description}</p>
     </header>
-    
-    <!-- Hero Image -->
-    {post.data.heroImage && (
-      <div class="aspect-video rounded-2xl overflow-hidden mb-12">
-        <img 
-          src={post.data.heroImage?.src} 
-          alt={post.data.title}
-          class="w-full h-full object-cover"
-        />
-      </div>
+
+    {post.data.heroImage && post.data.heroAlt && (
+      <Figure src={post.data.heroImage} alt={post.data.heroAlt} caption={post.data.heroCaption} size="wide" />
     )}
-    
-    <!-- Content -->
-    <div class="prose prose-lg max-w-none">
-      <Content />
+
+    <div class="prose prose-invert prose-lg max-w-none blog-body">
+      <Content components={mdxComponents} />
     </div>
-    
-    <!-- Back link -->
-    <div class="mt-16 pt-8 border-t border-white/10 flex items-center justify-between">
-      <a href="/blog" class="inline-flex items-center gap-2 text-white/60 hover:text-[#00D4FF] transition">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-        </svg>
-        Back to blog
-      </a>
-      <a 
-        href="mailto:hello@canopy.ag?subject=Re: {post.data.title}" 
-        class="text-white/60 hover:text-[#00D4FF] transition"
-      >
-        Reply via email
-      </a>
-    </div>
+
+    <footer class="blog-post__foot">
+      <div class="blog-chips">
+        {post.data.tags.map((t) => (
+          <a href={`/blog/tag/${t}`} class="blog-chip">{tagLabel(t)}</a>
+        ))}
+      </div>
+      <a href={replyHref}>Reply by email</a>
+    </footer>
+
+    <PrevNext prev={prev} next={next} />
   </article>
-</Layout>
+
+  <Related posts={related} tag={primaryTag} />
+</PostLayout>
