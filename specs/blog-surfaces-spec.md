@@ -243,7 +243,7 @@ idempotent: rerunning overwrites the generated files.
 
 `.github/workflows/site-ci.yml`, on `pull_request` and `push` to `main`:
 
-1. `actions/checkout`, `actions/setup-node` with Node 20 and npm cache.
+1. `actions/checkout`, `actions/setup-node` with Node 22 and npm cache.
 2. `npm ci` with `NODE_AUTH_TOKEN` from the repo secret `GH_PACKAGES_READ_TOKEN`
    (a classic PAT with `read:packages` on `canopy-ag`; operator creates it).
 3. `npm run build`, which runs `astro check` then `astro build`. Frontmatter schema
