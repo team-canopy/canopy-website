@@ -1,0 +1,46 @@
+name: Site CI
+
+# Build gate for the Astro site. Runs on every PR and on main.
+# @canopy-ag/react-ui is published to GitHub Packages. Install auth prefers the
+# GH_PACKAGES_READ_TOKEN repo secret (classic PAT, read:packages on canopy-ag) and
+# falls back to the workflow's own GITHUB_TOKEN, which works once the react-ui
+# package grants this repo read access (package settings, Manage Actions access).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: No em dashes in source or content (AGENTS.md)
+        run: |
+          if grep -rnP '\x{2014}' src --include='*.astro' --include='*.mdx' --include='*.md' --include='*.ts' --include='*.tsx' --include='*.json'; then
+            echo "Em dash found. Use a comma, colon, or period instead."
+            exit 1
+          fi
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Check and build
+        run: npm run build
+        env:
+          VERCEL_ENV: production

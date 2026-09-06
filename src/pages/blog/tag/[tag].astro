@@ -1,0 +1,35 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import PostCard from '~/components/blog/PostCard.astro';
+import TagChips from '~/components/blog/TagChips.astro';
+import { getPublishedPosts, getUsedTags } from '~/lib/blog/collection';
+import { tagLabel } from '~/lib/blog/tags';
+import '~/styles/blog.css';
+
+export async function getStaticPaths() {
+  const tags = await getUsedTags();
+  return tags.map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+const label = tagLabel(tag);
+const posts = (await getPublishedPosts()).filter((p) => p.data.tags.includes(tag));
+const tags = await getUsedTags();
+---
+
+<Layout title={`${label} | Canopy blog`} description={`Posts tagged ${label.toLowerCase()} from the Canopy blog.`}>
+  <div class="blog-container">
+    <header class="blog-head">
+      <p class="blog-eyebrow">Field notes</p>
+      <h1 class="blog-head__title">Tagged {label.toLowerCase()}</h1>
+      <p class="blog-head__sub">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+    </header>
+    <div class="blog-toolbar">
+      <TagChips tags={tags} active={tag} />
+      <a href="/rss.xml" class="blog-toolbar__rss">RSS</a>
+    </div>
+    <div class="blog-grid">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,45 @@
+---
+interface Props {
+  /** URL from `import clip from './clip.mp4'`. */
+  src: string;
+  /** Describes the motion for screen readers. */
+  alt: string;
+  poster?: string;
+  caption?: string;
+}
+
+const { src, alt, poster, caption } = Astro.props;
+---
+
+<figure class="blog-figure blog-clip">
+  <div class="blog-clip__frame">
+    <video
+      class="blog-clip__video"
+      src={src}
+      poster={poster}
+      aria-label={alt}
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      data-clip
+    ></video>
+    <span class="blog-clip__badge" aria-hidden="true">Loop</span>
+  </div>
+  {caption && <figcaption class="blog-caption">{caption}</figcaption>}
+</figure>
+
+<script>
+  // Autoplay only when the visitor has not asked for reduced motion; otherwise show controls.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLVideoElement>('video[data-clip]').forEach((v) => {
+    if (reduce) {
+      v.controls = true;
+    } else {
+      v.autoplay = true;
+      v.play().catch(() => {
+        v.controls = true;
+      });
+    }
+  });
+</script>

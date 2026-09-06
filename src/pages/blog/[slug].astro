@@ -1,0 +1,75 @@
+---
+import { getEntry, render } from 'astro:content';
+import PostLayout from '~/layouts/PostLayout.astro';
+import Byline from '~/components/blog/Byline.astro';
+import DraftBadge from '~/components/blog/DraftBadge.astro';
+import Figure from '~/components/blog/Figure.astro';
+import PrevNext from '~/components/blog/PrevNext.astro';
+import Related from '~/components/blog/Related.astro';
+import { mdxComponents } from '~/components/blog/mdx';
+import { getPublishedPosts } from '~/lib/blog/collection';
+import { prevNext, relatedPosts } from '~/lib/blog/posts';
+import { tagLabel } from '~/lib/blog/tags';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const posts = await getPublishedPosts();
+const { Content, remarkPluginFrontmatter } = await render(post);
+const minutesRead = remarkPluginFrontmatter.minutesRead as number | undefined;
+const author = await getEntry(post.data.author);
+if (!author) throw new Error(`Unknown author "${post.data.author.id}" in ${post.id}`);
+const { prev, next } = prevNext(posts, post.id);
+const related = relatedPosts(posts, post.id, 3);
+const primaryTag = post.data.tags[0];
+const replyHref = `mailto:hello@canopy.ag?subject=${encodeURIComponent(`Re: ${post.data.title}`)}`;
+---
+
+<PostLayout post={post} authorName={author.data.name}>
+  <article class="blog-column blog-post">
+    <header>
+      <p class="blog-crumbs">
+        <a href="/blog">Blog</a>
+        {primaryTag && (
+          <>
+            &nbsp;/&nbsp; <a href={`/blog/tag/${primaryTag}`}><b>{tagLabel(primaryTag)}</b></a>
+          </>
+        )}
+        {post.data.draft && (
+          <>
+            &nbsp; <DraftBadge />
+          </>
+        )}
+      </p>
+      <h1 class="blog-post__title">{post.data.title}</h1>
+      <p class="blog-post__dek">{post.data.description}</p>
+      <div class="blog-post__meta">
+        <Byline post={post} minutesRead={minutesRead} />
+      </div>
+    </header>
+
+    {post.data.heroImage && post.data.heroAlt && (
+      <Figure src={post.data.heroImage} alt={post.data.heroAlt} caption={post.data.heroCaption} size="wide" />
+    )}
+
+    <div class="prose prose-invert prose-lg max-w-none blog-body">
+      <Content components={mdxComponents} />
+    </div>
+
+    <footer class="blog-post__foot">
+      <div class="blog-chips">
+        {post.data.tags.map((t) => (
+          <a href={`/blog/tag/${t}`} class="blog-chip">{tagLabel(t)}</a>
+        ))}
+      </div>
+      <a href={replyHref}>Reply by email</a>
+    </footer>
+
+    <PrevNext prev={prev} next={next} />
+  </article>
+
+  <Related posts={related} tag={primaryTag} />
+</PostLayout>

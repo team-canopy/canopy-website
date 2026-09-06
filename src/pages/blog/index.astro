@@ -1,86 +1,49 @@
 ---
 import Layout from '~/layouts/Layout.astro';
-import { getCollection } from 'astro:content';
+import PostCard from '~/components/blog/PostCard.astro';
+import TagChips from '~/components/blog/TagChips.astro';
+import { getPublishedPosts, getUsedTags } from '~/lib/blog/collection';
+import '~/styles/blog.css';
 
-const allPosts = await getCollection('posts');
-const publishedPosts = allPosts
-  .filter((post) => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const posts = await getPublishedPosts();
+const tags = await getUsedTags();
+const [featured, ...rest] = posts;
 ---
 
-<Layout title="Blog - Canopy">
-  <!-- Hero -->
-  <div class="relative py-20 border-b border-white/10">
-    <div class="absolute inset-0 bg-gradient-to-b from-[#00D4FF]/5 to-transparent pointer-events-none"></div>
-    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-5xl font-bold mb-4 gradient-text">Blog</h1>
-      <p class="text-xl text-white/60">Insights on agriculture, technology, and building the future of growing.</p>
-    </div>
-  </div>
+<Layout
+  title="Blog | Canopy"
+  description="Field notes on irrigation, crop health, labor, and the economics of container nurseries."
+>
+  <div class="blog-container">
+    <header class="blog-head">
+      <p class="blog-eyebrow">Field notes</p>
+      <h1 class="blog-head__title">Irrigation, written down.</h1>
+      <p class="blog-head__sub">
+        What we learn running connected irrigation in container nurseries: crop health, labor, inputs, and the
+        numbers behind them.
+      </p>
+    </header>
 
-  <!-- Posts -->
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    {publishedPosts.length === 0 ? (
-      <div class="text-center py-20">
-        <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-[#00D4FF]/10 flex items-center justify-center">
-          <svg class="w-8 h-8 text-[#00D4FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
-          </svg>
-        </div>
-        <p class="text-white/60 text-lg">No posts yet. Check back soon!</p>
-      </div>
+    {posts.length === 0 ? (
+      <p class="blog-empty">No posts yet. Check back soon.</p>
     ) : (
-      <div class="space-y-8">
-        {publishedPosts.map((post) => (
-          <article class="glass rounded-2xl overflow-hidden hover:scale-[1.01] transition duration-300 group">
-            {post.data.heroImage && (
-              <div class="aspect-video overflow-hidden">
-                <img 
-                  src={post.data.heroImage} 
-                  alt={post.data.title}
-                  class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                />
-              </div>
-            )}
-            <div class="p-8">
-              <div class="flex items-center gap-4 text-sm text-white/40 mb-4">
-                <time datetime={post.data.pubDate.toISOString()}>
-                  {post.data.pubDate.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </time>
-                {post.data.tags.length > 0 && (
-                  <>
-                    <span>•</span>
-                    <div class="flex gap-2">
-                      {post.data.tags.map((tag) => (
-                        <span class="text-[#00D4FF]">{tag}</span>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-              <h2 class="text-2xl font-semibold mb-3 group-hover:text-[#00D4FF] transition">
-                <a href={`/blog/${post.slug}`}>
-                  {post.data.title}
-                </a>
-              </h2>
-              <p class="text-white/60 leading-relaxed mb-4">{post.data.description}</p>
-              <a 
-                href={`/blog/${post.slug}`} 
-                class="inline-flex items-center gap-2 text-[#00D4FF] hover:gap-3 transition"
-              >
-                Read more
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                </svg>
-              </a>
+      <>
+        <div class="blog-toolbar">
+          <TagChips tags={tags} filter />
+          <a href="/rss.xml" class="blog-toolbar__rss">RSS</a>
+        </div>
+
+        <PostCard post={featured} featured />
+
+        {rest.length > 0 && (
+          <>
+            <h2 class="blog-grid-label">Earlier posts</h2>
+            <div class="blog-grid">
+              {rest.map((post) => <PostCard post={post} />)}
             </div>
-          </article>
-        ))}
-      </div>
+          </>
+        )}
+      </>
     )}
   </div>
 </Layout>

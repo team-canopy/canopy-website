@@ -1,0 +1,42 @@
+---
+import { tagLabel } from '~/lib/blog/tags';
+
+interface Props {
+  tags: string[];
+  /** The tag that is active on a tag page; "all" on the index. */
+  active?: string;
+  /** On the index, chips filter cards in place. */
+  filter?: boolean;
+}
+
+const { tags, active = 'all', filter = false } = Astro.props;
+---
+
+<nav class="blog-chips" aria-label="Filter by tag" data-filter={filter ? '' : undefined}>
+  <a href="/blog" class:list={['blog-chip', { 'blog-chip--on': active === 'all' }]} data-tag="all">All</a>
+  {tags.map((tag) => (
+    <a href={`/blog/tag/${tag}`} class:list={['blog-chip', { 'blog-chip--on': active === tag }]} data-tag={tag}>
+      {tagLabel(tag)}
+    </a>
+  ))}
+</nav>
+
+<script>
+  // Progressive enhancement: with JS, chips filter cards in place; without, they are links to tag pages.
+  const nav = document.querySelector<HTMLElement>('.blog-chips[data-filter]');
+  if (nav) {
+    const chips = [...nav.querySelectorAll<HTMLAnchorElement>('.blog-chip')];
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-tags]')];
+    nav.addEventListener('click', (e) => {
+      const chip = (e.target as HTMLElement).closest<HTMLAnchorElement>('.blog-chip');
+      if (!chip) return;
+      e.preventDefault();
+      const tag = chip.dataset.tag ?? 'all';
+      chips.forEach((c) => c.classList.toggle('blog-chip--on', c === chip));
+      cards.forEach((card) => {
+        const tags = (card.dataset.tags ?? '').split(' ');
+        card.hidden = tag !== 'all' && !tags.includes(tag);
+      });
+    });
+  }
+</script>

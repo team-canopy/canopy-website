@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@canopy-ag/react-ui/tokens.css";
+@plugin "@tailwindcss/typography";
 
 body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -36,77 +37,6 @@ html {
 
 .glow-text {
   text-shadow: 0 0 40px rgba(34, 197, 94, 0.5);
-}
-
-/* Prose styles for blog posts */
-.prose {
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.8;
-}
-
-.prose h1, .prose h2, .prose h3, .prose h4 {
-  color: #22C55E;
-  font-weight: 600;
-  margin-top: 2em;
-  margin-bottom: 0.8em;
-}
-
-.prose h1 {
-  font-size: 2.5em;
-  margin-top: 0;
-}
-
-.prose h2 {
-  font-size: 1.8em;
-  border-bottom: 1px solid rgba(34, 197, 94, 0.2);
-  padding-bottom: 0.3em;
-}
-
-.prose p {
-  margin-bottom: 1.2em;
-}
-
-.prose a {
-  color: #00D4FF;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(0, 212, 255, 0.3);
-  transition: all 0.2s;
-}
-
-.prose a:hover {
-  color: #0099CC;
-  border-bottom-color: #00D4FF;
-}
-
-.prose ul, .prose ol {
-  margin-bottom: 1.2em;
-  padding-left: 1.5em;
-}
-
-.prose li {
-  margin-bottom: 0.4em;
-}
-
-.prose code {
-  background: rgba(0, 212, 255, 0.1);
-  color: #00D4FF;
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
-  font-size: 0.9em;
-}
-
-.prose pre {
-  background: #111D2F;
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  border-radius: 12px;
-  padding: 1.5em;
-  overflow-x: auto;
-  margin-bottom: 1.5em;
-}
-
-.prose pre code {
-  background: none;
-  padding: 0;
 }
 
 /* Button styles */

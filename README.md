@@ -35,22 +35,9 @@ npm run dev
 npm run build
 ```
 
-## Adding Blog Posts
+## Adding blog posts
 
-Create a new `.md` or `.mdx` file in `src/content/posts/`:
-
-```yaml
----
-title: "Your Post Title"
-description: "Brief description"
-pubDate: 2026-02-09
-draft: false
-tags: ["tag1", "tag2"]
-heroImage: "/images/your-image.jpg"  # optional
----
-
-Your content here...
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md). Posts live in `src/content/blog/<slug>/index.mdx` with their images beside them.
 
 ## Content Style
 
